@@ -1,8 +1,12 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import { Home } from "../pages/Home";
-import { Settings } from "../pages/Settings";
-import { NavigationContainer, NavigationProp, DefaultTheme } from "@react-navigation/native";
-import { Theme } from "./themes/Theme";
+import { Home } from "./pages/Home";
+import { Settings } from "./pages/Settings";
+import {
+  NavigationContainer,
+  NavigationProp,
+  DefaultTheme,
+} from "@react-navigation/native";
+import { Theme } from "./shared/themes/Theme";
 
 type TScreenDefinitions = {
   Home: undefined;
@@ -30,7 +34,7 @@ export function AppRoutes() {
         colors: {
           ...DefaultTheme.colors,
           background: Theme.colors.dark.background,
-          card: Theme.colors.dark.primary,
+          card: Theme.colors.dark.background,
           text: Theme.colors.dark.text,
           border: Theme.colors.dark.cardBorder,
           primary: Theme.colors.dark.primary,

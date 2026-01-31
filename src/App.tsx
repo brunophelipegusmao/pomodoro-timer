@@ -1,8 +1,15 @@
-import { Nunito_400Regular, Nunito_400Regular_Italic, Nunito_700Bold } from "@expo-google-fonts/nunito";
+import {
+  Nunito_400Regular,
+  Nunito_400Regular_Italic,
+  Nunito_700Bold,
+} from "@expo-google-fonts/nunito";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
-import { AppRoutes } from "./shared/AppRoutes";
+import { AppRoutes } from "./AppRoutes";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Theme } from "./shared/themes/Theme";
+import { StatusBar } from "react-native";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -17,11 +24,18 @@ export function App() {
     if (loaded || error) {
       SplashScreen.hide();
     }
-  },[loaded, error]);
+  }, [loaded, error]);
 
   if (!loaded && !error) {
     return null;
   }
 
-  return AppRoutes();
+  return (
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: Theme.colors.dark.background, color: Theme.colors.dark.text }}
+    >
+      <StatusBar style="light" />
+      <AppRoutes />
+    </SafeAreaView>
+  );
 }
