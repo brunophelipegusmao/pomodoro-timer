@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Theme } from "../shared/themes/Theme";
-import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { TScreenDefinitionsProps } from "../AppRoutes";
 
