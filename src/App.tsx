@@ -32,9 +32,9 @@ export function App() {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: Theme.colors.dark.background, color: Theme.colors.dark.text }}
+      style={{ flex: 1, backgroundColor: Theme.colors.dark.background }}
     >
-      <StatusBar style="light" />
+      <StatusBar barStyle="light-content" />
       <AppRoutes />
     </SafeAreaView>
   );
