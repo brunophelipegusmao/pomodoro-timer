@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useState } from "react";
 import { Theme } from "../shared/themes/Theme";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -6,6 +7,10 @@ import { TScreenDefinitionsProps } from "../AppRoutes";
 
 export const Settings = () => {
   const navigation = useNavigation<TScreenDefinitionsProps>();
+  const [exercicePeriod, setPeriod] = useState<number | undefined>(undefined);
+  const [restPeriod, setRestPeriod] = useState<number | undefined>(undefined);
+  const [exerciseChangePeriod, setExerciseChangePeriod] = useState<number | undefined>(undefined);
+  const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(false);
   return (
     <View style={styles.mainContainer}>
       <TouchableOpacity
@@ -29,14 +34,59 @@ export const Settings = () => {
             <Text style={styles.buttonTitleText}>Periodo de execícios</Text>
 
             <View style={styles.buttonGroup}>
-              <TouchableOpacity style={styles.secondaryButton}>
-                <Text style={styles.secondaryButtonText}>1 min</Text>
+              <TouchableOpacity
+                style={
+                  exercicePeriod === 1
+                    ? styles.primaryButton
+                    : styles.secondaryButton
+                }
+                onPress={() => setPeriod(1)}
+              >
+                <Text
+                  style={
+                    exercicePeriod === 1
+                      ? styles.primaryButtonText
+                      : styles.secondaryButtonText
+                  }
+                >
+                  1 min
+                </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.primaryButton}>
-                <Text style={styles.primaryButtonText}>2 min</Text>
+              <TouchableOpacity
+                style={
+                  exercicePeriod === 2
+                    ? styles.primaryButton
+                    : styles.secondaryButton
+                }
+                onPress={() => setPeriod(2)}
+              >
+                <Text
+                  style={
+                    exercicePeriod === 2
+                      ? styles.primaryButtonText
+                      : styles.secondaryButtonText
+                  }
+                >
+                  2 min
+                </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.secondaryButton}>
-                <Text style={styles.secondaryButtonText}>3 min</Text>
+              <TouchableOpacity
+                style={
+                  exercicePeriod === 3
+                    ? styles.primaryButton
+                    : styles.secondaryButton
+                }
+                onPress={() => setPeriod(3)}
+              >
+                <Text
+                  style={
+                    exercicePeriod === 3
+                      ? styles.primaryButtonText
+                      : styles.secondaryButtonText
+                  }
+                >
+                  3 min
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -44,14 +94,59 @@ export const Settings = () => {
             <Text style={styles.buttonTitleText}>Descanso</Text>
 
             <View style={styles.buttonGroup}>
-              <TouchableOpacity style={styles.primaryButton}>
-                <Text style={styles.primaryButtonText}>1 min</Text>
+              <TouchableOpacity
+                style={
+                  restPeriod === 1
+                    ? styles.primaryButton
+                    : styles.secondaryButton
+                }
+                onPress={() => setRestPeriod(1)}
+              >
+                <Text
+                  style={
+                    restPeriod === 1
+                      ? styles.primaryButtonText
+                      : styles.secondaryButtonText
+                  }
+                >
+                  1 min
+                </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.secondaryButton}>
-                <Text style={styles.secondaryButtonText}>2 min</Text>
+              <TouchableOpacity
+                style={
+                  restPeriod === 2
+                    ? styles.primaryButton
+                    : styles.secondaryButton
+                }
+                onPress={() => setRestPeriod(2)}
+              >
+                <Text
+                  style={
+                    restPeriod === 2
+                      ? styles.primaryButtonText
+                      : styles.secondaryButtonText
+                  }
+                >
+                  2 min
+                </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.secondaryButton}>
-                <Text style={styles.secondaryButtonText}>3 min</Text>
+              <TouchableOpacity
+                style={
+                  restPeriod === 3
+                    ? styles.primaryButton
+                    : styles.secondaryButton
+                }
+                onPress={() => setRestPeriod(3)}
+              >
+                <Text
+                  style={
+                    restPeriod === 3
+                      ? styles.primaryButtonText
+                      : styles.secondaryButtonText
+                  }
+                >
+                  3 min
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -59,14 +154,59 @@ export const Settings = () => {
             <Text style={styles.buttonTitleText}>Troca de execícios</Text>
 
             <View style={styles.buttonGroup}>
-              <TouchableOpacity style={styles.primaryButton}>
-                <Text style={styles.primaryButtonText}>1 min</Text>
+              <TouchableOpacity
+                style={
+                  exerciseChangePeriod === 1
+                    ? styles.primaryButton
+                    : styles.secondaryButton
+                }
+                onPress={() => setExerciseChangePeriod(1)}
+              >
+                <Text
+                  style={
+                    exerciseChangePeriod === 1
+                      ? styles.primaryButtonText
+                      : styles.secondaryButtonText
+                  }
+                >
+                  1 min
+                </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.secondaryButton}>
-                <Text style={styles.secondaryButtonText}>2 min</Text>
+              <TouchableOpacity
+                style={
+                  exerciseChangePeriod === 2
+                    ? styles.primaryButton
+                    : styles.secondaryButton
+                }
+                onPress={() => setExerciseChangePeriod(2)}
+              >
+                <Text
+                  style={
+                    exerciseChangePeriod === 2
+                      ? styles.primaryButtonText
+                      : styles.secondaryButtonText
+                  }
+                >
+                  2 min
+                </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.secondaryButton}>
-                <Text style={styles.secondaryButtonText}>3 min</Text>
+              <TouchableOpacity
+                style={
+                  exerciseChangePeriod === 3
+                    ? styles.primaryButton
+                    : styles.secondaryButton
+                }
+                onPress={() => setExerciseChangePeriod(3)}
+              >
+                <Text
+                  style={
+                    exerciseChangePeriod === 3
+                      ? styles.primaryButtonText
+                      : styles.secondaryButtonText
+                  }
+                >
+                  3 min
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -74,13 +214,18 @@ export const Settings = () => {
             <Text style={styles.buttonTitleText}>Notificações</Text>
 
             <View style={styles.notificationGroup}>
-              <TouchableOpacity style={styles.actitavateNotificationButton}>
-                <Text style={styles.actitavateNotificationButtonText}>
+              <TouchableOpacity 
+                style={notificationsEnabled === false ? styles.notificationButton : styles.actitavateNotificationButton}
+                onPress={() => setNotificationsEnabled(false)}
+              >
+                <Text style={notificationsEnabled === false ? styles.notificationButtonText : styles.actitavateNotificationButtonText}>
                   Desativado
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.notificationButton}>
-                <Text style={styles.notificationButtonText}>Ativado</Text>
+              <TouchableOpacity style={notificationsEnabled === true ? styles.notificationButton : styles.actitavateNotificationButton}
+                onPress={() => setNotificationsEnabled(true)}
+              >
+                <Text style={notificationsEnabled === true ? styles.notificationButtonText : styles.actitavateNotificationButtonText}>Ativado</Text>
               </TouchableOpacity>
             </View>
           </View>

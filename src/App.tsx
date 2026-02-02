@@ -7,7 +7,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import { AppRoutes } from "./AppRoutes";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Theme } from "./shared/themes/Theme";
 import { StatusBar } from "react-native";
 
@@ -31,11 +31,13 @@ export function App() {
   }
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: Theme.colors.dark.background }}
-    >
-      <StatusBar barStyle="light-content" />
-      <AppRoutes />
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: Theme.colors.dark.background }}
+      >
+        <StatusBar barStyle="light-content" />
+        <AppRoutes />
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
