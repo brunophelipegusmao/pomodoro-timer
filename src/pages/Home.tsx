@@ -175,8 +175,8 @@ export const Home = () => {
               size={170}
               width={7}
               fill={progressFill}
-              tintColor={Theme.colors.dark.muted}
-              backgroundColor={Theme.colors.dark.glowBorder}
+              tintColor={Theme.colors.dark.mutedText}
+              backgroundColor={Theme.colors.dark.primary}
               rotation={0}
             >
               {() => (
@@ -191,7 +191,10 @@ export const Home = () => {
         <View>
           {!isRunning && !isPaused && (
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.primaryButton} onPress={handleStart}>
+              <TouchableOpacity
+                style={styles.primaryButton}
+                onPress={handleStart}
+              >
                 <Text style={styles.primaryButtonText}>
                   {phase === "finished" ? "Iniciar novamente" : "Iniciar"}
                 </Text>
@@ -208,7 +211,10 @@ export const Home = () => {
                 <Text style={styles.primaryButtonText}>Pausar</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.secondaryButton} onPress={resetTimer}>
+              <TouchableOpacity
+                style={styles.secondaryButton}
+                onPress={resetTimer}
+              >
                 <Text style={styles.secondaryButtonText}>Parar</Text>
               </TouchableOpacity>
             </View>
@@ -225,7 +231,10 @@ export const Home = () => {
               >
                 <Text style={styles.primaryButtonText}>Continuar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.secondaryButton} onPress={resetTimer}>
+              <TouchableOpacity
+                style={styles.secondaryButton}
+                onPress={resetTimer}
+              >
                 <Text style={styles.secondaryButtonText}>Reiniciar</Text>
               </TouchableOpacity>
             </View>
