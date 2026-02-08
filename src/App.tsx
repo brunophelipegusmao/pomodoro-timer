@@ -10,6 +10,7 @@ import { AppRoutes } from "./AppRoutes";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Theme } from "./shared/themes/Theme";
 import { StatusBar } from "react-native";
+import { WorkoutSettingsProvider } from "./shared/context/WorkoutSettingsContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -32,12 +33,14 @@ export function App() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView
-        style={{ flex: 1, backgroundColor: Theme.colors.dark.background }}
-      >
-        <StatusBar barStyle="light-content" />
-        <AppRoutes />
-      </SafeAreaView>
+      <WorkoutSettingsProvider>
+        <SafeAreaView
+          style={{ flex: 1, backgroundColor: Theme.colors.dark.background }}
+        >
+          <StatusBar barStyle="light-content" />
+          <AppRoutes />
+        </SafeAreaView>
+      </WorkoutSettingsProvider>
     </SafeAreaProvider>
   );
 }

@@ -1,16 +1,158 @@
-import { useNavigation } from "@react-navigation/native";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { TScreenDefinitionsProps } from "../AppRoutes";
-import { Theme } from "../shared/themes/Theme";
-import { CircularProgress } from "react-native-circular-progress";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { useEffect, useMemo, useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { CircularProgress } from "react-native-circular-progress";
+import { TScreenDefinitionsProps } from "../AppRoutes";
+import { useWorkoutSettings } from "../shared/context/WorkoutSettingsContext";
+import { Theme } from "../shared/themes/Theme";
+
+type TimerPhase = "exercise" | "rest" | "finished";
+
+const formatSeconds = (totalSeconds: number) => {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+    2,
+    "0"
+  )}`;
+};
 
 export const Home = () => {
   const navigation = useNavigation<TScreenDefinitionsProps>();
+  const { exerciseDuration, restDuration, cycles } = useWorkoutSettings();
+
+  const exerciseDurationSeconds =
+    exerciseDuration.minutes * 60 + exerciseDuration.seconds;
+  const restDurationSeconds = restDuration.minutes * 60 + restDuration.seconds;
+
+  const [isRunning, setIsRunning] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [phase, setPhase] = useState<TimerPhase>("exercise");
+  const [currentCycle, setCurrentCycle] = useState(1);
+  const [secondsLeft, setSecondsLeft] = useState(exerciseDurationSeconds);
+
+  const resetTimer = () => {
+    setIsRunning(false);
+    setIsPaused(false);
+    setPhase("exercise");
+    setCurrentCycle(1);
+    setSecondsLeft(exerciseDurationSeconds);
+  };
+
+  useEffect(() => {
+    if (isRunning || isPaused || phase === "finished") {
+      return;
+    }
+
+    setPhase("exercise");
+    setCurrentCycle(1);
+    setSecondsLeft(exerciseDurationSeconds);
+  }, [exerciseDurationSeconds, cycles, isRunning, isPaused, phase]);
+
+  useEffect(() => {
+    if (!isRunning || isPaused || phase === "finished") {
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setSecondsLeft((previousSeconds) =>
+        previousSeconds > 0 ? previousSeconds - 1 : 0
+      );
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isRunning, isPaused, phase]);
+
+  useEffect(() => {
+    if (!isRunning || isPaused || secondsLeft > 0) {
+      return;
+    }
+
+    if (phase === "exercise") {
+      if (currentCycle >= cycles) {
+        setPhase("finished");
+        setIsRunning(false);
+        setIsPaused(false);
+        return;
+      }
+
+      setPhase("rest");
+      setSecondsLeft(restDurationSeconds);
+      return;
+    }
+
+    if (phase === "rest") {
+      setCurrentCycle((previousCycle) => previousCycle + 1);
+      setPhase("exercise");
+      setSecondsLeft(exerciseDurationSeconds);
+    }
+  }, [
+    currentCycle,
+    cycles,
+    exerciseDurationSeconds,
+    isPaused,
+    isRunning,
+    phase,
+    restDurationSeconds,
+    secondsLeft,
+  ]);
+
+  const phaseDuration =
+    phase === "rest" ? restDurationSeconds : exerciseDurationSeconds;
+
+  const progressFill = useMemo(() => {
+    if (phase === "finished") {
+      return 100;
+    }
+
+    if (phaseDuration <= 0) {
+      return 0;
+    }
+
+    return ((phaseDuration - secondsLeft) / phaseDuration) * 100;
+  }, [phase, phaseDuration, secondsLeft]);
+
+  const stateLabel = useMemo(() => {
+    if (phase === "finished") {
+      return "Amores, dispensandos!!!";
+    }
+
+    if (isPaused) {
+      return "Pausado";
+    }
+
+    if (!isRunning) {
+      return "Hora de suar";
+    }
+
+    if (phase === "exercise") {
+      return `Suando`;
+    }
+
+    return `Descanso`;
+  }, [currentCycle, cycles, isPaused, isRunning, phase]);
+
+  const handleStart = () => {
+    if (phase === "finished") {
+      setPhase("exercise");
+      setCurrentCycle(1);
+      setSecondsLeft(exerciseDurationSeconds);
+    }
+
+    setIsRunning(true);
+    setIsPaused(false);
+  };
+
+  const cyclesList = Array.from({ length: cycles }, (_, index) => index + 1);
+
   return (
     <View style={styles.mainContainer}>
-
-      <TouchableOpacity style={styles.settingsButton} onPress={() => navigation.navigate("Settings")}>
+      <TouchableOpacity
+        style={styles.settingsButton}
+        onPress={() => navigation.navigate("Settings")}
+      >
         <MaterialIcons
           name="settings"
           size={28}
@@ -23,68 +165,96 @@ export const Home = () => {
           <View style={styles.titleContainer}>
             <Text style={styles.titleText}>Cronômetro</Text>
           </View>
+
           <View style={styles.stateContainer}>
-            <Text style={styles.stateText}>Hora de suar</Text>
+            <Text style={styles.stateText}>{stateLabel}</Text>
           </View>
-          {/* <View style={styles.stateContainer}>
-          <Text style={styles.stateText}>Suando</Text>
-        </View>
-        <View style={styles.stateContainer}>
-          <Text style={styles.stateText}>Descanso</Text>
-        </View>
-        <View style={styles.stateContainer}>
-          <Text style={styles.stateText}>Amores, dispensandos</Text>
-        </View> */}
 
           <View style={styles.progressContainer}>
             <CircularProgress
-              size={160}
+              size={170}
               width={7}
-              fill={50}
+              fill={progressFill}
               tintColor={Theme.colors.dark.muted}
               backgroundColor={Theme.colors.dark.glowBorder}
               rotation={0}
-              children={() => <Text style={styles.progressText}>25:00</Text>}
-            ></CircularProgress>
+            >
+              {() => (
+                <Text style={styles.progressText}>
+                  {formatSeconds(phase === "finished" ? 0 : secondsLeft)}
+                </Text>
+              )}
+            </CircularProgress>
           </View>
         </View>
 
         <View>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.primaryButton}>
-              <Text style={styles.primaryButtonText}>Iniciar</Text>
-            </TouchableOpacity>
+          {!isRunning && !isPaused && (
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.primaryButton} onPress={handleStart}>
+                <Text style={styles.primaryButtonText}>
+                  {phase === "finished" ? "Iniciar novamente" : "Iniciar"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {isRunning && !isPaused && (
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.primaryButton}
+                onPress={() => setIsPaused(true)}
+              >
+                <Text style={styles.primaryButtonText}>Pausar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.secondaryButton} onPress={resetTimer}>
+                <Text style={styles.secondaryButtonText}>Parar</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {isRunning && isPaused && (
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.primaryButton}
+                onPress={() => {
+                  setIsPaused(false);
+                  setIsRunning(true);
+                }}
+              >
+                <Text style={styles.primaryButtonText}>Continuar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.secondaryButton} onPress={resetTimer}>
+                <Text style={styles.secondaryButtonText}>Reiniciar</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+
+        <View style={styles.exerciseContainer}>
+          <Text style={styles.exerciseText}>Ciclos:</Text>
+          <View style={styles.indicatorList}>
+            {cyclesList.map((cycleNumber) => {
+              const isCompleted =
+                phase === "finished" ||
+                (phase === "rest" && cycleNumber <= currentCycle) ||
+                (phase === "exercise" && cycleNumber < currentCycle);
+
+              return (
+                <View
+                  key={cycleNumber}
+                  style={
+                    isCompleted
+                      ? styles.exerciseIndicatorComplete
+                      : styles.exerciseIndicator
+                  }
+                />
+              );
+            })}
           </View>
-          {/* <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.primaryButton}>
-            <Text style={styles.primaryButtonText}>Pausar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryButton}>
-            <Text style={styles.secondaryButtonText}>Parar</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.primaryButton}>
-            <Text style={styles.primaryButtonText}>Continuar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryButton}>
-            <Text style={styles.secondaryButtonText}>Reiniciar</Text>
-          </TouchableOpacity>
-        </View> */}
-        </View>
-
-        <View style={styles.exerciceContainer}>
-          <Text style={styles.exerciceText}>Exercícios:</Text>
-
-          <View style={styles.exerciceIndicatorComplete} />
-          <View style={styles.exerciceIndicatorComplete} />
-          <View style={styles.exerciceIndicatorComplete} />
-          <View style={styles.exerciceIndicator} />
-          <View style={styles.exerciceIndicator} />
-          <View style={styles.exerciceIndicator} />
         </View>
       </View>
-
     </View>
   );
 };
@@ -103,7 +273,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   settingsButton: {
-   alignSelf: "flex-end",
+    alignSelf: "flex-end",
   },
   titleGroup: {
     gap: 4,
@@ -114,7 +284,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 55,
     alignItems: "center",
-
     width: "auto",
   },
   primaryButtonText: {
@@ -129,7 +298,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 55,
     alignItems: "center",
-
     width: "auto",
   },
   secondaryButtonText: {
@@ -142,7 +310,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 16,
   },
-
   progressContainer: {
     alignItems: "center",
     marginVertical: 32,
@@ -168,30 +335,31 @@ const styles = StyleSheet.create({
     fontSize: Theme.fontSizes.medium,
     color: Theme.colors.dark.mutedText,
   },
-  exerciceContainer: {
+  exerciseContainer: {
     alignItems: "center",
-    flexDirection: "row",
     gap: 6,
     justifyContent: "center",
   },
-  exerciceText: {
+  exerciseText: {
     fontSize: Theme.fontSizes.medium,
     color: Theme.colors.dark.mutedText,
   },
-
-  exerciceIndicator: {
-    width: 20,
-    height: 20,
-    borderRadius: "100%",
-    backgroundColor: Theme.colors.dark.mutedText,
-    marginRight: 8,
+  indicatorList: {
+    flexDirection: "row",
+    gap: 8,
+    flexWrap: "wrap",
+    justifyContent: "center",
   },
-
-  exerciceIndicatorComplete: {
-    width: 20,
-    height: 20,
-    borderRadius: "100%",
+  exerciseIndicator: {
+    width: 16,
+    height: 16,
+    borderRadius: 999,
+    backgroundColor: Theme.colors.dark.mutedText,
+  },
+  exerciseIndicatorComplete: {
+    width: 16,
+    height: 16,
+    borderRadius: 999,
     backgroundColor: Theme.colors.dark.primary,
-    marginRight: 8,
   },
 });
